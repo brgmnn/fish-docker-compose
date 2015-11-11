@@ -40,17 +40,8 @@ complete -c docker-compose -n '__fish_use_subcommand' -xa migrate-to-labels  --d
 complete -c docker-compose -n '__fish_use_subcommand' -xa version            --description "Show the Docker-Compose version information"
 
 # docker-compose commands that take services
-complete -c docker-compose -f -n '__fish_docker_using_command build' -a '(__fish_docker_compose_all_services)' --description "Docker compose service"
-complete -c docker-compose -f -n '__fish_docker_using_command kill' -a '(__fish_docker_compose_all_services)' --description "Docker compose service"
-complete -c docker-compose -f -n '__fish_docker_using_command logs' -a '(__fish_docker_compose_all_services)' --description "Docker compose service"
-complete -c docker-compose -f -n '__fish_docker_using_command port' -a '(__fish_docker_compose_all_services)' --description "Docker compose service"
-complete -c docker-compose -f -n '__fish_docker_using_command ps' -a '(__fish_docker_compose_all_services)' --description "Docker compose service"
-complete -c docker-compose -f -n '__fish_docker_using_command pull' -a '(__fish_docker_compose_all_services)' --description "Docker compose service"
-complete -c docker-compose -f -n '__fish_docker_using_command restart' -a '(__fish_docker_compose_all_services)' --description "Docker compose service"
-complete -c docker-compose -f -n '__fish_docker_using_command rm' -a '(__fish_docker_compose_all_services)' --description "Docker compose service"
-complete -c docker-compose -f -n '__fish_docker_using_command run' -a '(__fish_docker_compose_all_services)' --description "Docker compose service"
-complete -c docker-compose -f -n '__fish_docker_using_command scale' -a '(__fish_docker_compose_all_services)' --description "Docker compose service"
-complete -c docker-compose -f -n '__fish_docker_using_command start' -a '(__fish_docker_compose_all_services)' --description "Docker compose service"
-complete -c docker-compose -f -n '__fish_docker_using_command stop' -a '(__fish_docker_compose_all_services)' --description "Docker compose service"
-complete -c docker-compose -f -n '__fish_docker_using_command up' -a '(__fish_docker_compose_all_services)' --description "Docker compose service"
+for subcmd in build kill logs port ps pull restart rm run scale start stop up
+    complete -c docker-compose -f -n "__fish_docker_using_command $subcmd" \
+        -a '(__fish_docker_compose_all_services)' --description "Docker compose service"
+end
 
