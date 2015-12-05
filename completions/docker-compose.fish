@@ -16,7 +16,11 @@ end
 function __fish_docker_compose_all_services --description "List all services in docker-compose.yml"
     set -l path (pwd)
     while not test -e $path/docker-compose.yml
-        set path $path/..
+        if test $path = '/'
+            return
+        end
+
+        set path (realpath $path/..)
     end
     cat $path/docker-compose.yml | command grep '^[a-zA-Z]' | command sed 's/://'
 end
