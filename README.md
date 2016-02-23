@@ -1,7 +1,10 @@
 # docker-compose completions for Fish
 
-Fish shell completions for docker-compose.
-Here is a collection of
+Fish shell completions for docker-compose, completing both subcommands for
+`docker-compose` as well as services for those subcommands.
+
+These completions are compatible with docker-compose 1.6, including both new
+and old versions of the `docker-compose.yml` file.
 
 ## Installation
 
@@ -22,5 +25,9 @@ to your `config.fish`, reload your shell and run `fundle install`.
 
 Put `completions/docker-compose.fish` your `~/.config/fish/completions`
 directory, and source `init.fish` on startup.
+
+## License
+
+MIT
 
 [1]: https://github.com/tuvistavie/fundle

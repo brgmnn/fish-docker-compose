@@ -12,8 +12,8 @@ function __fish_docker_using_command
   return 1
 end
 
-# List all available services in a docker-compose.yml file.
-function __fish_docker_compose_all_services --description "List all services in docker-compose.yml"
+function __fish_docker_compose_file_path --description \
+        'Get the next docker-compose.yml file in the folder parent path.'
     set -l path (pwd)
     while not test -e $path/docker-compose.yml
         if test $path = '/'
@@ -22,7 +22,35 @@ function __fish_docker_compose_all_services --description "List all services in 
 
         set path (realpath $path/..)
     end
-    cat $path/docker-compose.yml | command grep '^[a-zA-Z]' | command sed 's/://'
+
+    echo $path/docker-compose.yml
+end
+
+function __fish_docker_compose_file_version --description \
+        'Get the version of a docker-compose.yml file.'
+    cat (__fish_docker_compose_file_path) \
+        | command grep '^version:\(\s*\)["\']\?[0-9]["\']\?' \
+        | command grep -o '[0-9]'
+
+    if test $status -ne 0
+        echo '1'
+    end
+end
+
+function __fish_docker_compose_all_services --description \
+        'List all services in docker-compose.yml.'
+    set -l path (__fish_docker_compose_file_path)
+    set -l file_version (__fish_docker_compose_file_version)
+
+    switch $file_version
+        case '2'
+            # TODO: currently this only finds services that are indented with
+            # 2 spaces. Make it work with any indentation.
+            cat $path | command sed -n '/^services:/,/^\w/p' \
+                | command grep '^  \w' | command sed 's/\s\|://g'
+        case '1'
+            cat $path | command grep '^[a-zA-Z]' | command sed 's/://'
+    end
 end
 
 # All docker-compose commands
@@ -42,10 +70,15 @@ complete -c docker-compose -n '__fish_use_subcommand' -xa stop               --d
 complete -c docker-compose -n '__fish_use_subcommand' -xa up                 --description "Create and start containers"
 complete -c docker-compose -n '__fish_use_subcommand' -xa migrate-to-labels  --description "Recreate containers to add labels"
 complete -c docker-compose -n '__fish_use_subcommand' -xa version            --description "Show the Docker-Compose version information"
+complete -c docker-compose -n '__fish_use_subcommand' -xa create             --description "Create containers without starting them"
+complete -c docker-compose -n '__fish_use_subcommand' -xa config             --description "Validate and print compose configuration"
+complete -c docker-compose -n '__fish_use_subcommand' -xa down               --description "Stop and remove all container resources"
+complete -c docker-compose -n '__fish_use_subcommand' -xa events             --description "Monitor events from containers"
 
 # docker-compose commands that take services
-for subcmd in build kill logs port ps pull restart rm run scale start stop up
+for subcmd in build create down kill logs port ps pull restart rm run scale \
+        start stop up
     complete -c docker-compose -f -n "__fish_docker_using_command $subcmd" \
-        -a '(__fish_docker_compose_all_services)' --description "Docker compose service"
+        -a '(__fish_docker_compose_all_services)' \
+        --description "Docker compose service"
 end
-
