@@ -8,10 +8,9 @@ and old versions of the `docker-compose.yml` file.
 
 ## Installation
 
-Two ways you can install this, either using the [fundle][1] package manager or
-manually. I recommend using fundle so you can keep updated.
+There are several ways you can install these shell completions.
 
-### Using [fundle][1] (recommended)
+### Using [fundle][1]
 
 Add
 
@@ -21,13 +20,22 @@ fundle plugin 'brgmnn/fish-docker-compose'
 
 to your `config.fish`, reload your shell and run `fundle install`.
 
+### Using [fisherman][2]
+
+Just run:
+
+```
+fisher brgmnn/fish-docker-compose
+```
+
 ### Manually
 
 Put `completions/docker-compose.fish` your `~/.config/fish/completions`
-directory, and source `init.fish` on startup.
+directory.
 
 ## License
 
 MIT
 
 [1]: https://github.com/tuvistavie/fundle
+[2]: https://github.com/fisherman/fisherman
