@@ -47,7 +47,7 @@ function __fish_docker_compose_all_services --description \
             # TODO: currently this only finds services that are indented with
             # 2 spaces. Make it work with any indentation.
             cat $path | command sed -n '/^services:/,/^\w/p' \
-                | command grep '^  \w' | command sed 's/\s\|://g'
+                | command grep '^  \w' | command sed 's/[^a-zA-Z0-9_-]//g'
         case '1'
             cat $path | command grep '^[a-zA-Z]' | command sed 's/://'
     end
@@ -79,8 +79,7 @@ complete -c docker-compose -n '__fish_use_subcommand' -xa up                --de
 complete -c docker-compose -n '__fish_use_subcommand' -xa version           --description "Show the Docker-Compose version information"
 
 # docker-compose commands that take services
-for subcmd in build create down kill logs port ps pull restart rm run scale \
-        start stop up
+for subcmd in build create down kill logs port ps pull restart rm run scale start stop up
     complete -c docker-compose -f -n "__fish_docker_using_command $subcmd" \
         -a '(__fish_docker_compose_all_services)' \
         --description "Docker compose service"
