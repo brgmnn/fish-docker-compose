@@ -6,6 +6,7 @@ Fish shell completions for docker-compose, completing both subcommands for
 These completions are compatible with docker-compose 1.6, including both new
 and old versions of the `docker-compose.yml` file.
 
+
 ## Installation
 
 There are several ways you can install these shell completions.
@@ -32,6 +33,7 @@ fisher brgmnn/fish-docker-compose
 
 Put `completions/docker-compose.fish` your `~/.config/fish/completions`
 directory.
+
 
 ## License
 
