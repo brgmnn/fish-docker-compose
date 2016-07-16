@@ -41,17 +41,23 @@ function __fish_docker_compose_all_services --description \
         'List all services in docker-compose.yml.'
     set -l path (__fish_docker_compose_file_path)
     set -l file_version (__fish_docker_compose_file_version)
+    set -l chars 'a-zA-Z0-9_-'
 
     switch $file_version
         case '2'
             # TODO: currently this only finds services that are indented with
             # 2 spaces. Make it work with any indentation.
             cat $path | command sed -n '/^services:/,/^\w/p' \
-                | command grep '^  \w' | command sed 's/[^a-zA-Z0-9_-]//g'
+                | command grep "^  [$chars]*:" \
+                | command sed "s/[^$chars]//g"
         case '1'
             cat $path | command grep '^[a-zA-Z]' | command sed 's/://'
     end
 end
+
+
+# Delete old completions
+complete -c docker-compose -e
 
 # All docker-compose commands
 complete -c docker-compose -n '__fish_use_subcommand' -xa build             --description "Build or rebuild services"
