@@ -41,7 +41,7 @@ function __fish_docker_compose_all_services --description \
         'List all services in docker-compose.yml.'
     set -l path (__fish_docker_compose_file_path)
     set -l file_version (__fish_docker_compose_file_version)
-    set -l chars 'a-zA-Z0-9_-'
+    set -l chars 'a-zA-Z0-9_.-'
 
     switch $file_version
         case '2'
