@@ -44,14 +44,14 @@ function __fish_docker_compose_all_services --description \
     set -l chars 'a-zA-Z0-9_.-'
 
     switch $file_version
-        case '2'
+        case '1'
+            cat $path | command grep '^[a-zA-Z]' | command sed 's/://'
+        case '*'
             # TODO: currently this only finds services that are indented with
             # 2 spaces. Make it work with any indentation.
             cat $path | command sed -n '/^services:/,/^\w/p' \
                 | command grep "^  [$chars]*:" \
                 | command sed "s/[^$chars]//g"
-        case '1'
-            cat $path | command grep '^[a-zA-Z]' | command sed 's/://'
     end
 end
 
@@ -60,32 +60,35 @@ end
 complete -c docker-compose -e
 
 # All docker-compose commands
-complete -c docker-compose -n '__fish_use_subcommand' -xa build             --description "Build or rebuild services"
-complete -c docker-compose -n '__fish_use_subcommand' -xa config            --description "Validate and print compose configuration"
-complete -c docker-compose -n '__fish_use_subcommand' -xa create            --description "Create containers without starting them"
-complete -c docker-compose -n '__fish_use_subcommand' -xa down              --description "Stop and remove all container resources"
-complete -c docker-compose -n '__fish_use_subcommand' -xa events            --description "Monitor events from containers"
-complete -c docker-compose -n '__fish_use_subcommand' -xa exec              --description "Execute a command in a running container"
-complete -c docker-compose -n '__fish_use_subcommand' -xa help              --description "Get help on a command"
-complete -c docker-compose -n '__fish_use_subcommand' -xa kill              --description "Kill containers"
-complete -c docker-compose -n '__fish_use_subcommand' -xa logs              --description "View output from containers"
-complete -c docker-compose -n '__fish_use_subcommand' -xa migrate-to-labels --description "Recreate containers to add labels"
-complete -c docker-compose -n '__fish_use_subcommand' -xa pause             --description "Pause services"
-complete -c docker-compose -n '__fish_use_subcommand' -xa port              --description "Print the public port for a port binding"
-complete -c docker-compose -n '__fish_use_subcommand' -xa ps                --description "List containers"
-complete -c docker-compose -n '__fish_use_subcommand' -xa pull              --description "Pulls service images"
-complete -c docker-compose -n '__fish_use_subcommand' -xa restart           --description "Restart services"
-complete -c docker-compose -n '__fish_use_subcommand' -xa rm                --description "Remove stopped containers"
-complete -c docker-compose -n '__fish_use_subcommand' -xa run               --description "Run a one-off command"
-complete -c docker-compose -n '__fish_use_subcommand' -xa scale             --description "Set number of containers for a service"
-complete -c docker-compose -n '__fish_use_subcommand' -xa start             --description "Start services"
-complete -c docker-compose -n '__fish_use_subcommand' -xa stop              --description "Stop services"
-complete -c docker-compose -n '__fish_use_subcommand' -xa unpause           --description "Unpause services"
-complete -c docker-compose -n '__fish_use_subcommand' -xa up                --description "Create and start containers"
-complete -c docker-compose -n '__fish_use_subcommand' -xa version           --description "Show the Docker-Compose version information"
+complete -c docker-compose -n '__fish_use_subcommand' -xa build   --description "Build or rebuild services"
+complete -c docker-compose -n '__fish_use_subcommand' -xa bundle  --description "Generate a Docker bundle from the Compose file"
+complete -c docker-compose -n '__fish_use_subcommand' -xa config  --description "Validate and print compose configuration"
+complete -c docker-compose -n '__fish_use_subcommand' -xa create  --description "Create containers without starting them"
+complete -c docker-compose -n '__fish_use_subcommand' -xa down    --description "Stop and remove all container resources"
+complete -c docker-compose -n '__fish_use_subcommand' -xa events  --description "Monitor events from containers"
+complete -c docker-compose -n '__fish_use_subcommand' -xa exec    --description "Execute a command in a running container"
+complete -c docker-compose -n '__fish_use_subcommand' -xa help    --description "Get help on a command"
+complete -c docker-compose -n '__fish_use_subcommand' -xa images  --description "List images"
+complete -c docker-compose -n '__fish_use_subcommand' -xa kill    --description "Kill containers"
+complete -c docker-compose -n '__fish_use_subcommand' -xa logs    --description "View output from containers"
+complete -c docker-compose -n '__fish_use_subcommand' -xa pause   --description "Pause services"
+complete -c docker-compose -n '__fish_use_subcommand' -xa port    --description "Print the public port for a port binding"
+complete -c docker-compose -n '__fish_use_subcommand' -xa ps      --description "List containers"
+complete -c docker-compose -n '__fish_use_subcommand' -xa pull    --description "Pulls service images"
+complete -c docker-compose -n '__fish_use_subcommand' -xa push    --description "Push service images"
+complete -c docker-compose -n '__fish_use_subcommand' -xa restart --description "Restart services"
+complete -c docker-compose -n '__fish_use_subcommand' -xa rm      --description "Remove stopped containers"
+complete -c docker-compose -n '__fish_use_subcommand' -xa run     --description "Run a one-off command"
+complete -c docker-compose -n '__fish_use_subcommand' -xa scale   --description "Set number of containers for a service"
+complete -c docker-compose -n '__fish_use_subcommand' -xa start   --description "Start services"
+complete -c docker-compose -n '__fish_use_subcommand' -xa stop    --description "Stop services"
+complete -c docker-compose -n '__fish_use_subcommand' -xa top     --description "Display the running processes"
+complete -c docker-compose -n '__fish_use_subcommand' -xa unpause --description "Unpause services"
+complete -c docker-compose -n '__fish_use_subcommand' -xa up      --description "Create and start containers"
+complete -c docker-compose -n '__fish_use_subcommand' -xa version --description "Show the Docker-Compose version information"
 
 # docker-compose commands that take services
-for subcmd in build create down kill logs port ps pull restart rm run scale start stop up
+for subcmd in build create events exec images kill logs pause port ps pull push restart rm run scale start stop top unpause up
     complete -c docker-compose -f -n "__fish_docker_using_command $subcmd" \
         -a '(__fish_docker_compose_all_services)' \
         --description "Docker compose service"
@@ -97,13 +100,20 @@ end
 #
 
 # build
-complete -c docker-compose -n "__fish_docker_using_command build" -l force-rm --description "Always remove intermediate containers"
-complete -c docker-compose -n "__fish_docker_using_command build" -l no-cache --description "Do not use cache when building the image"
-complete -c docker-compose -n "__fish_docker_using_command build" -l pull     --description "Always attempt to pull a newer version of the image"
+complete -c docker-compose -n "__fish_docker_using_command build" -l build-arg --description "Set build-time variables for one service"
+complete -c docker-compose -n "__fish_docker_using_command build" -l force-rm  --description "Always remove intermediate containers"
+complete -c docker-compose -n "__fish_docker_using_command build" -l no-cache  --description "Do not use cache when building the image"
+complete -c docker-compose -n "__fish_docker_using_command build" -l pull      --description "Always attempt to pull a newer version of the image"
+
+# bundle
+complete -c docker-compose -n "__fish_docker_using_command bundle"      -l push-images --description "Automatically push images for any services which have a `build` option specified"
+complete -c docker-compose -n "__fish_docker_using_command bundle" -s o -l output      --description "Path to write the bundle file to. Defaults to '<project name>.dab'"
 
 # config
-complete -c docker-compose -n "__fish_docker_using_command config"      -l services --description "Print the service names, one per line"
-complete -c docker-compose -n "__fish_docker_using_command config" -s q -l quiet    --description "Only validate the configuration, don't print anything"
+complete -c docker-compose -n "__fish_docker_using_command config" -s q -l quiet                 --description "Only validate the configuration, don't print anything"
+complete -c docker-compose -n "__fish_docker_using_command config"      -l resolve-image-digests --description "Pin image tags to digests"
+complete -c docker-compose -n "__fish_docker_using_command config"      -l services              --description "Print the service names, one per line"
+complete -c docker-compose -n "__fish_docker_using_command config"      -l volumes               --description "Print the volume names, one per line"
 
 # create
 complete -c docker-compose -n "__fish_docker_using_command create" -l build          --description "Build images before creating containers"
@@ -122,8 +132,12 @@ complete -c docker-compose -n "__fish_docker_using_command events" -l json --des
 # exec
 complete -c docker-compose -n "__fish_docker_using_command exec"      -l index -a "1" --description "Index of the container if there are multiple instances of a service. Defaults to 1"
 complete -c docker-compose -n "__fish_docker_using_command exec"      -l privileged   --description "Give extended privileges to the process"
-complete -c docker-compose -n "__fish_docker_using_command exec"      -l user         --description "Run the command as this user"
+complete -c docker-compose -n "__fish_docker_using_command exec" -s T                 --description "Disable pseudo-tty allocation. By default `docker-compose exec` allocates a TTY"
 complete -c docker-compose -n "__fish_docker_using_command exec" -s d                 --description "Detached mode: Run command in the background"
+complete -c docker-compose -n "__fish_docker_using_command exec" -s u -l user         --description "Run the command as this user"
+
+# images
+complete -c docker-compose -n "__fish_docker_using_command images" -s q --description "Only display IDs"
 
 # kill
 complete -c docker-compose -n "__fish_docker_using_command kill" -s s --description "SIGNAL to send to the container. Default signal is SIGKILL"
@@ -143,6 +157,11 @@ complete -c docker-compose -n "__fish_docker_using_command ps" -s q --descriptio
 
 # pull
 complete -c docker-compose -n "__fish_docker_using_command pull" -l ignore-pull-failures --description "Pull what it can and ignores images with pull failures"
+complete -c docker-compose -n "__fish_docker_using_command pull" -l parallel             --description "Pull multiple images in parallel"
+complete -c docker-compose -n "__fish_docker_using_command pull" -l quiet                --description "Pull without printing progress information"
+
+# push
+complete -c docker-compose -n "__fish_docker_using_command push" -l ignore-push-failures --description "Push what it can and ignores images with push failures"
 
 # restart
 complete -c docker-compose -n "__fish_docker_using_command restart" -s t -l timeout -a "10" --description "Specify a shutdown timeout in seconds. Default 10"
@@ -150,6 +169,7 @@ complete -c docker-compose -n "__fish_docker_using_command restart" -s t -l time
 # rm
 complete -c docker-compose -n "__fish_docker_using_command rm" -s a -l all   --description "Also remove one-off containers created by docker-compose run"
 complete -c docker-compose -n "__fish_docker_using_command rm" -s f -l force --description "Don't ask to confirm removal"
+complete -c docker-compose -n "__fish_docker_using_command rm" -s s -l stop  --description "Stop the containers, if required, before removing"
 complete -c docker-compose -n "__fish_docker_using_command rm" -s v          --description "Remove volumes associated with containers"
 
 # run
@@ -164,6 +184,7 @@ complete -c docker-compose -n "__fish_docker_using_command run" -s e            
 complete -c docker-compose -n "__fish_docker_using_command run" -s p -l publish       --description "Publish a container's port(s) to the host"
 complete -c docker-compose -n "__fish_docker_using_command run" -s u -l user          --description "Run as a specified username or uid"
 complete -c docker-compose -n "__fish_docker_using_command run" -s w -l workdir       --description "Working directory inside the container"
+complete -c docker-compose -n "__fish_docker_using_command run" -s v -l volume        --description "Bind mount a volume (default [])"
 
 # scale
 complete -c docker-compose -n "__fish_docker_using_command scale" -s t -l timeout -a "10" --description "Specify a shutdown timeout in seconds. Default 10"
@@ -182,6 +203,8 @@ complete -c docker-compose -n "__fish_docker_using_command up"      -l build    
 complete -c docker-compose -n "__fish_docker_using_command up"      -l abort-on-container-exit --description "Stop all containers if any container was stopped. Incompatible with -d"
 complete -c docker-compose -n "__fish_docker_using_command up" -s t -l timeout                 --description "Use this timeout in seconds for container shutdown when attached or when containers are already running. Default 10"
 complete -c docker-compose -n "__fish_docker_using_command up"      -l remove-orphans          --description "Remove containers for services not defined in the Compose file"
+complete -c docker-compose -n "__fish_docker_using_command up"      -l exit-code-from          --description "Return the exit code of the selected service container. Implies --abort-on-container-exit"
+complete -c docker-compose -n "__fish_docker_using_command up"      -l scale                   --description "Scale SERVICE to NUM instances. Overrides the `scale` setting in the Compose file if present"
 
 # version
 complete -c docker-compose -n "__fish_docker_using_command version" -l short --description "Shows only Compose's version number"
