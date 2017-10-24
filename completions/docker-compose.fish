@@ -29,8 +29,8 @@ end
 function __fish_docker_compose_file_version --description \
         'Get the version of a docker-compose.yml file.'
     cat (__fish_docker_compose_file_path) \
-        | command grep '^version:\(\s*\)["\']\?[0-9]["\']\?' \
-        | command grep -o '[0-9]'
+        | command grep '^version:\(\s*\)["\']\?[.0-9]*["\']\?' \
+        | command grep -o '[.0-9]*'
 
     if test $status -ne 0
         echo '1'
