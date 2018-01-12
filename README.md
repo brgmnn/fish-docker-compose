@@ -6,8 +6,6 @@ Fish shell completions for docker-compose, completing both subcommands for
 These completions are compatible with docker-compose 1.6, including both new
 and old versions of the `docker-compose.yml` file.
 
-Checkout my [Hyper.sh][4] fish shell plugin: [github.com/brgmnn/fish-hyper][3]
-
 
 ## Installation
 
