@@ -26,7 +26,7 @@ to your `config.fish`, reload your shell and run `fundle install`.
 Just run:
 
 ```
-fisher add brgmnn/fish-docker-compose
+fisher install brgmnn/fish-docker-compose
 ```
 
 ### Manually
